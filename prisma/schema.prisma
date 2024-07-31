@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id       String  @id @default(uuid()) @db.Uuid
+  email    String  @unique
+  name     String?
+  password String
+  Site     Site[]
+
+  @@map("users")
+}
+
+model Site {
+  id     String @id @default(uuid()) @db.Uuid
+  domain String
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id])
+
+  widgets Widget[]
+
+  @@map("sites")
+}
+
+enum WidgetType {
+  HEADER
+  STACK
+  GROUP
+  IMAGE
+  TEXT
+  BUTTON
+  ANCHOR
+}
+
+model Widget {
+  id       String     @id @default(uuid()) @db.Uuid
+  siteId   String?    @db.Uuid
+  type     WidgetType
+  position Int
+  variant  String?
+  value    String?
+  parentId String?    @db.Uuid
+  site     Site?      @relation(fields: [siteId], references: [id])
+  parent   Widget?    @relation("WidgetChildren", fields: [parentId], references: [id])
+  children Widget[]   @relation("WidgetChildren")
+
+  onclicks OnClick[]
+
+  @@map("widgets")
+}
+
+enum OnClickType {
+  NAVIGATE
+}
+
+model OnClick {
+  widgetId String      @id @db.Uuid
+  type     OnClickType
+  target   String
+  value    String
+
+  widget Widget @relation(fields: [widgetId], references: [id])
+
+  @@map("onclicks")
+}
