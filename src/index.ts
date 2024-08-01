@@ -1,6 +1,5 @@
 import express, { Application } from "express";
 import cors from "cors"
-import { UserController } from "../src/api/users/user.controller"
 import { WidgetController } from "../src/api/widgets/widgets.controller"
 
 class Server {
@@ -34,7 +33,6 @@ class Server {
     //}
 
     private routes() {
-        this.app.use(new UserController().router);
         this.app.use(new WidgetController().router);
     }
 
