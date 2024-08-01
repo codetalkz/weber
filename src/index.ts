@@ -1,6 +1,6 @@
 import express, { Application } from "express";
 import cors from "cors"
-import { WidgetController } from "../src/api/widgets/widgets.controller"
+import { WidgetController } from "./api/widgets/widgets.controller";
 
 class Server {
     private app: Application;

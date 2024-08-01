@@ -12,6 +12,9 @@
     "deploy": "prisma migrate deploy",
     "seed": "prisma db seed"
   },
+  "prisma": {
+    "seed": "node ./dist/seed/seed.js"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {

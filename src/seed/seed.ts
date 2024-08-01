@@ -21,7 +21,14 @@ async function main() {
         }
     });
 
-
+    const widget = await prisma.widget.create({
+        data: {
+            type: 'BUTTON',
+            siteId: site.id,
+            value: 'Click me',
+            position: 1,
+        }
+    })
 }
 
 function hashPassword(plainPassword: string) {

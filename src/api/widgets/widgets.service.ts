@@ -11,14 +11,12 @@ export class WidgetService {
 		try {
 			const site = await this.db.site.findFirst({
 				where: {
-					domain: 'domain.com'
+					domain: "Site 1",
 				},
 				select: {
 					widgets: {
 						where: {
-							children: {
-								some: {}
-							}
+							parentId: null,
 						},
 						select: {
 							id: true,
@@ -37,6 +35,4 @@ export class WidgetService {
 			console.log(error);
 		}
 	}
-
-
 }
