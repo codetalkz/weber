@@ -8,7 +8,7 @@
     "migrate": "prisma migrate dev --name",
     "generate": "prisma generate",
     "build": "rimraf ./app/dist && tsc",
-    "start": "node ./app/dist/index.js",
+    "start": "node ./dist/src/index.js",
     "deploy": "prisma migrate deploy",
     "seed": "prisma db seed"
   },
