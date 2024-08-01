@@ -22,14 +22,6 @@ async function main() {
     });
 
 
-    const stackWidget = await prisma.widget.create({
-        data: {
-            siteId: site.id,
-            type: $Enums.WidgetType.STACK
-        }
-    });
-
-
 }
 
 function hashPassword(plainPassword: string) {
