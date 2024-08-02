@@ -24,6 +24,9 @@ export function errorMiddleware(error:any, req: Request, res: Response, next: Ne
 }
 
 export function notFoundMiddleware(req: Request, res:Response, next: NextFunction){
+    console.log(req.url)
+    console.log(req.method)
+
     next(new HttpException(404, "Endpoint tidak ditemukan"))
 }
 
