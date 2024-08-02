@@ -1,6 +1,8 @@
+import 'reflect-metadata'
 import express, { Application } from "express";
 import cors from "cors"
 import { WidgetController } from "./api/widgets/widgets.controller";
+import { errorMiddleware, notFoundMiddleware } from './shared/middleware/error.middleware';
 
 class Server {
     private app: Application;
@@ -11,7 +13,7 @@ class Server {
         this.routes();
         //this.utils();
         //this.registerStaticFiles();
-        //this.registerErrorMiddlewares();
+        this.registerErrorMiddlewares();
     }
 
     private registerMiddlewares() {
@@ -19,10 +21,11 @@ class Server {
         this.app.use(cors());
     }
 
-    //private registerErrorMiddlewares() {
-    //    this.app.use(notFoundMiddleware);
-    //    this.app.use(errorMiddleware);
-    //}
+    private registerErrorMiddlewares() {
+        this.app.use(notFoundMiddleware);
+        this.app.use(errorMiddleware);
+    }
+
     //
     //private registerStaticFiles() {
     //    this.app.use("/api/images", express.static("public"));

@@ -35,4 +35,8 @@ export class WidgetService {
 			console.log(error);
 		}
 	}
+
+    async updateSite(data: any) {
+	return 'a'
+    }
 }

@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { WidgetService } from "../widgets/widgets.service"
 import { constants, createResponse } from "../../shared/utils";
+import { validationMiddleware } from "../../shared/middleware/validation.middleware";
+import { WidgetArrayDTO } from "./dto/listofwidget.dto";
 
 export class WidgetController {
     private path: string;
@@ -18,6 +20,12 @@ export class WidgetController {
         this.router.get(
             this.path + '/testing',
             this.test
+        )
+
+        this.router.post(
+            this.path + '/create',
+            validationMiddleware(WidgetArrayDTO),
+            this.updateSite
         )
     }
 
@@ -42,6 +50,28 @@ export class WidgetController {
         }
     }
 
+    private updateSite = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        try {
+            const { data } = req.body;
+
+            const updatedSite = await this.widgetService.updateSite(data);
+
+            return res
+                .status(200)
+                .json(
+                    createResponse(
+                        constants.SUCCESS_MESSAGE,
+                        updatedSite
+                    )
+                );
+        } catch (e) {
+            next(e)
+        }
+    }
 
 
 }
