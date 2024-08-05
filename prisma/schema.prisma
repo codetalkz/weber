@@ -69,7 +69,6 @@ enum OnClickType {
 model OnClick {
   widgetId String      @id @db.Uuid
   type     OnClickType
-  target   String
   value    String
 
   widget Widget @relation(fields: [widgetId], references: [id], onDelete: Cascade, onUpdate: Cascade)

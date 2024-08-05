@@ -1,5 +1,10 @@
-import { Prisma, PrismaClient, WidgetType } from "@prisma/client";
+import { OnClickType, Prisma, PrismaClient, WidgetType } from "@prisma/client";
 import { v4 as uuidv4 } from 'uuid';
+
+interface OnClick {
+	type: OnClickType;
+	value: string;
+}
 
 interface Component {
 	type: WidgetType;
@@ -7,6 +12,7 @@ interface Component {
 	variant?: string;
 	value?: string;
 	children?: Component[];
+	onclick?: OnClick;
 }
 
 interface InsertComponentsBody {
@@ -57,6 +63,7 @@ export class WidgetService {
 
 		const widgets: Prisma.WidgetCreateManyInput[] = [];
 		const widgetMap = new Map<string, Prisma.WidgetCreateManyInput>(); // To keep track of widget data
+		const onClicks: Prisma.OnClickCreateManyInput[] = [];
 
 		function flattenComponents(parentId: string | null, components: Component[]) {
 			components.forEach((component, index) => {
@@ -77,6 +84,14 @@ export class WidgetService {
 				if (component.children) {
 					flattenComponents(id, component.children);
 				}
+
+				if (component.onclick) {
+					onClicks.push({
+						widgetId: id,
+						type: component.onclick.type,
+						value: component.onclick.value
+					});
+				}
 			});
 		}
 
@@ -84,6 +99,10 @@ export class WidgetService {
 
 		await this.db.widget.createMany({
 			data: widgets,
+		});
+
+		await this.db.onClick.createMany({
+			data: onClicks,
 		});
 	}
 }
