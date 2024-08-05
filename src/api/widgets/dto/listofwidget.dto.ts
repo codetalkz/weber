@@ -1,11 +1,14 @@
-import { IsArray, ValidateNested } from 'class-validator';
+import { IsArray, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { WidgetDTO } from './widget.dto';
 
 export class WidgetArrayDTO {
+    @IsString()
+    siteId!: String;
+
     @IsArray()
     @ValidateNested({ each: true })
     @Type(() => WidgetDTO)
-    data!: WidgetDTO[];
+    components!: WidgetDTO[];
 }
 

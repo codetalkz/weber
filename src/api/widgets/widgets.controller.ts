@@ -18,7 +18,7 @@ export class WidgetController {
 
     private registerRoute() {
         this.router.get(
-            this.path + '/testing',
+            this.path + '/get-site',
             this.test
         )
 
@@ -50,15 +50,13 @@ export class WidgetController {
         }
     }
 
-    private updateSite = async (
+    private updateSite = async( 
         req: Request,
         res: Response,
         next: NextFunction
     ) => {
         try {
-            const { data } = req.body;
-
-            const updatedSite = await this.widgetService.updateSite(data);
+            const updatedSite = await this.widgetService.updateSite(req.body);
 
             return res
                 .status(200)
@@ -69,6 +67,7 @@ export class WidgetController {
                     )
                 );
         } catch (e) {
+            console.log(e)
             next(e)
         }
     }

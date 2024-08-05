@@ -54,7 +54,7 @@ model Widget {
   value    String?
   parentId String?    @db.Uuid
   site     Site?      @relation(fields: [siteId], references: [id])
-  parent   Widget?    @relation("WidgetChildren", fields: [parentId], references: [id])
+  parent   Widget?    @relation("WidgetChildren", fields: [parentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   children Widget[]   @relation("WidgetChildren")
 
   onclicks OnClick[]
@@ -72,7 +72,7 @@ model OnClick {
   target   String
   value    String
 
-  widget Widget @relation(fields: [widgetId], references: [id])
+  widget Widget @relation(fields: [widgetId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@map("onclicks")
 }
