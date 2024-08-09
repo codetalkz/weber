@@ -1,5 +1,6 @@
 import { OnClickType, Prisma, PrismaClient, WidgetType } from "@prisma/client";
 import { v4 as uuidv4 } from 'uuid';
+import { redisClient } from "../../shared/cache/redis";
 
 interface OnClick {
 	type: OnClickType;
@@ -28,14 +29,27 @@ export class WidgetService {
 	}
 
 	async getSites() {
+
+		if (redisClient.isOpen) {
+			const widgets = await redisClient.get('site1');
+
+			if (widgets) {
+				return {
+					'components': JSON.parse(widgets)
+				};
+			}
+		}
+
+
 		const site = await this.db.site.findFirst({
 			where: {
 				domain: "Site 1",
 			},
 			select: {
+				id: true,
 				widgets: {
 					where: {
-						parentId: null,
+						parentId: null
 					},
 					select: {
 						id: true,
@@ -48,8 +62,57 @@ export class WidgetService {
 				}
 			}
 		});
-		return site;
+
+
+		if (!site) {
+			return [];
+		}
+
+		const widgets = site.widgets;
+
+		const allWidgets = await this.fetchAllWidgets(site.id)
+
+		const widgetsMap = new Map(allWidgets.map(widget => [widget.id, widget]));
+
+		for (const widget of widgets) {
+			widget.children = this.getChildren(widget.id, widgetsMap);
+		}
+
+		redisClient.set('site1', JSON.stringify(widgets));
+
+		return {
+			'components': widgets
+		};
 	}
+
+	async fetchAllWidgets(siteId: string) {
+		return await this.db.widget.findMany({
+			where: {
+				siteId: siteId
+			},
+			select: {
+				id: true,
+				type: true,
+				position: true,
+				variant: true,
+				value: true,
+				parentId: true,
+			}
+		})
+	}
+
+	private getChildren(parentId: string, widgetMap: Map<string, any>): any[] {
+		// Get direct children
+		const children = Array.from(widgetMap.values()).filter(widget => widget.parentId === parentId);
+
+		// Recursively assign children
+		for (const child of children) {
+			child.children = this.getChildren(child.id, widgetMap);
+		}
+
+		return children;
+	}
+
 
 	async updateSite(data: any) {
 		// delete all widget of this site
@@ -70,7 +133,7 @@ export class WidgetService {
 				const id = uuidv4();
 				const widgetData: Prisma.WidgetCreateManyInput = {
 					id,
-					siteId: parentId ? null : siteId,
+					siteId: siteId,
 					type: component.type,
 					position: component.position,
 					variant: component.variant,

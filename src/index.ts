@@ -3,6 +3,7 @@ import express, { Application } from "express";
 import cors from "cors"
 import { WidgetController } from "./api/widgets/widgets.controller";
 import { errorMiddleware, notFoundMiddleware } from './shared/middleware/error.middleware';
+import { redisClient } from './shared/cache/redis';
 
 class Server {
     private app: Application;
@@ -14,6 +15,7 @@ class Server {
         //this.utils();
         //this.registerStaticFiles();
         this.registerErrorMiddlewares();
+        this.connectRedis();
     }
 
     private registerMiddlewares() {
@@ -28,6 +30,10 @@ class Server {
     private registerErrorMiddlewares() {
         this.app.use(notFoundMiddleware);
         this.app.use(errorMiddleware);
+    }
+
+    private connectRedis() {
+        redisClient.connect().catch(console.error);
     }
 
     //
